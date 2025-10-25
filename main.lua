@@ -23,7 +23,7 @@ local function toggleUnsafePortalsOption()
 	local optionFrame = ADDON:GetContent(UIC.OPTION_FRAME)
 	optionFrame.contentWindow.menuListFrame.categoryFrames[3].buttons[3]:OnClick("LeftButton")
 	
-	optionFrame.contentWindow.pageWindow.subFrame[6].content.optionFrames[13].optionControl.textButton:OnClick("LeftButton")
+	optionFrame.contentWindow.pageWindow.subFrame[6].content.optionFrames[14].optionControl.textButton:OnClick("LeftButton")
 	optionFrame:Save()
 	optionFrame:Show(false)
 end 
@@ -50,7 +50,7 @@ local function OnLoad()
 	systemConfigFrame.optionButton:OnClick("LeftButton")
 	local optionFrame = ADDON:GetContent(UIC.OPTION_FRAME)
 	optionFrame.contentWindow.menuListFrame.categoryFrames[3].buttons[3]:OnClick("LeftButton")
-	local ogValue = optionFrame.contentWindow.pageWindow.subFrame[6].content.optionFrames[13].optionControl.originalValue
+	local ogValue = optionFrame.contentWindow.pageWindow.subFrame[6].content.optionFrames[14].optionControl.originalValue
 	optionFrame:Show(false)
 
 	if ogValue == 0 then 
@@ -80,8 +80,10 @@ end
 
 local function OnUnload()
 	api.On("UPDATE", function() return end)
-	unsafePortalsWindow:Show(false)
-	unsafePortalsWindow = nil
+	if unsafePortalsWindow ~= nil then 
+		unsafePortalsWindow:Show(false)
+		unsafePortalsWindow = nil
+	end
 end
 
 unsafe_portals_Addon.OnLoad = OnLoad
