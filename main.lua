@@ -17,15 +17,16 @@ local buffIdCounter = 1
 local buffInfos = {}
 
 local isUnsafePortalsEnabled
-
 local function toggleUnsafePortalsOption()
-	systemConfigFrame.optionButton:OnClick("LeftButton")
-	local optionFrame = ADDON:GetContent(UIC.OPTION_FRAME)
-	optionFrame.contentWindow.menuListFrame.categoryFrames[3].buttons[3]:OnClick("LeftButton")
+	local currentValue = api.Option:GetOnlyUseMyPortalSetting()
 	
-	optionFrame.contentWindow.pageWindow.subFrame[6].content.optionFrames[14].optionControl.textButton:OnClick("LeftButton")
-	optionFrame:Save()
-	optionFrame:Show(false)
+	if currentValue == 0 then 
+		api.Option:SetOnlyUseMyPortalSetting(1)
+		isUnsafePortalsEnabled = true
+	else
+		api.Option:SetOnlyUseMyPortalSetting(0)
+		isUnsafePortalsEnabled = false
+	end
 end 
 
 local function OnUpdate(dt)
@@ -36,22 +37,16 @@ local function OnUpdate(dt)
 			clockTimer = 0
 			api.Log:Info("[Unsafe Portals] Other player portals are now disabled.")
 		end 
-		-- api.Log:Info(clockTimer)
 		clockTimer = clockTimer + dt
 	end 
 end 
 
 local function OnLoad()
 	local settings = api.GetSettings("unsafe_portals")
-	systemConfigFrame = ADDON:GetContent(UIC.SYSTEM_CONFIG_FRAME)
+	-- systemConfigFrame = ADDON:GetContent(UIC.SYSTEM_CONFIG_FRAME)
 
-
-	-- Get player's current unsafe portal setting
-	systemConfigFrame.optionButton:OnClick("LeftButton")
-	local optionFrame = ADDON:GetContent(UIC.OPTION_FRAME)
-	optionFrame.contentWindow.menuListFrame.categoryFrames[3].buttons[3]:OnClick("LeftButton")
-	local ogValue = optionFrame.contentWindow.pageWindow.subFrame[6].content.optionFrames[14].optionControl.originalValue
-	optionFrame:Show(false)
+	-- Get player's current unsafe portal setting via addon API
+	local ogValue = api.Option:GetOnlyUseMyPortalSetting() or 1
 
 	if ogValue == 0 then 
 		toggleUnsafePortalsOption()
@@ -60,21 +55,19 @@ local function OnLoad()
 
 	unsafePortalsWindow = api.Interface:CreateEmptyWindow("unsafePortalsWindow", "UIParent")
 	disableSafePortalsBtn = unsafePortalsWindow:CreateChildWidget("button", "disableSafePortalsBtn", 0, true)
-    ApplyButtonSkin(disableSafePortalsBtn, BUTTON_BASIC.DEFAULT)
+	ApplyButtonSkin(disableSafePortalsBtn, BUTTON_BASIC.DEFAULT)
 	disableSafePortalsBtn:SetText("Unsafe Portals")
 	disableSafePortalsBtn:SetExtent(120, 28)
 	disableSafePortalsBtn:AddAnchor("BOTTOMLEFT", "UIParent", 3, -30)
 	function disableSafePortalsBtn:OnClick()
-        toggleUnsafePortalsOption()
+		toggleUnsafePortalsOption()
 		isUnsafePortalsEnabled = false
 		api.Log:Info("[Unsafe Portals] You can use other player's portals for 10 seconds.")
-    end 
-    disableSafePortalsBtn:SetHandler("OnClick", disableSafePortalsBtn.OnClick)
+	end 
+	disableSafePortalsBtn:SetHandler("OnClick", disableSafePortalsBtn.OnClick)
 
-	
-	
 	unsafePortalsWindow:Show(true)
-    api.On("UPDATE", OnUpdate)
+	api.On("UPDATE", OnUpdate)
 	api.SaveSettings()
 end
 
