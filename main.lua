@@ -47,6 +47,7 @@ local function OnLoad()
 
 	-- Get player's current unsafe portal setting via addon API
 	local ogValue = api.Option:GetOnlyUseMyPortalSetting() or 1
+	api.Log:Info("[Unsafe Portals] Original 'Only Use My Portal' setting value: " .. tostring(ogValue))
 
 	if ogValue == 0 then 
 		toggleUnsafePortalsOption()
